@@ -50,15 +50,19 @@ T CFenwickTree<T>::GetFuncResInSegment(int left, int right) {
     T leftRes = 0;
     T rightRes = 0;
 
+    while (right >= 0) {
+        rightRes += data[right];
+        right = (right & (right + 1)) - 1;
+    }
+
     if(left>0)
         left -= 1;
+    else
+        return rightRes;
+
     while (left >= 0) {
         leftRes += data[left];
         left = (left & (left + 1)) - 1;
-    }
-    while (right > 0) {
-        rightRes += data[right];
-        right = (right & (right + 1)) - 1;
     }
     return rightRes - leftRes;
 }
