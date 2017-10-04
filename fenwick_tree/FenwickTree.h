@@ -22,8 +22,6 @@ public:
 
     T GetFuncResInSegment(int left, int right);
 
-    ~CFenwickTree() {}
-
 private:
     vector<T> data;
 };
@@ -41,10 +39,8 @@ CFenwickTree<T>::CFenwickTree( vector<T> inputArray) {
 template<class T>
 void CFenwickTree<T>::Update(int index, const T &value) {
     long N = data.size();
-    for (int i = 0; i < N; ++i) {
+    for (; index < N; index = index | (index + 1))
         data[index] += value;
-        index = index | (index + 1);
-    }
 }
 
 template<class T>
