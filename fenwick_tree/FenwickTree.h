@@ -16,11 +16,13 @@ class CFenwickTree {
 public:
     explicit CFenwickTree(int size = 0) : data(size) {};
 
-    explicit CFenwickTree(const vector<T> &inputArray);
+    explicit CFenwickTree(vector<T> inputArray);
 
     void Update(int index, const T &value);
 
     T GetFuncResInSegment(int left, int right);
+
+    ~CFenwickTree() {}
 
 private:
     vector<T> data;
@@ -29,7 +31,7 @@ private:
 //-------------------------------------------//
 
 template<class T>
-CFenwickTree<T>::CFenwickTree(const vector<T> &inputArray) {
+CFenwickTree<T>::CFenwickTree( vector<T> inputArray) {
 
     data.resize(inputArray.size());
     for (int i = 0; i < inputArray.size(); ++i)
@@ -55,11 +57,10 @@ T CFenwickTree<T>::GetFuncResInSegment(int left, int right) {
         right = (right & (right + 1)) - 1;
     }
 
-    if(left>0)
-        left -= 1;
-    else
+    if(left == 0)
         return rightRes;
 
+    left -= 1;
     while (left >= 0) {
         leftRes += data[left];
         left = (left & (left + 1)) - 1;
