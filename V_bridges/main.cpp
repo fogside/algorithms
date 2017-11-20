@@ -31,9 +31,10 @@ void Graph::load_graph() {
 
 void dfs_visit(vector<vector<pair<int, int> > > &nodes, int v, int &time,
                vector<bool> &colors,
-               vector<bool> &bridges,
-               vector<int> &in_times, vector<int> &up_arr,
-               int &counter, int parent_edge_num = -1,
+               vector<int> &bridges,
+               vector<int> &in_times,
+               vector<int> &up_arr,
+               int parent_edge_num = -1,
                int parent_vertex = -1) {
     ++time;
     colors[v] = true;
@@ -44,37 +45,45 @@ void dfs_visit(vector<vector<pair<int, int> > > &nodes, int v, int &time,
         int edge_num = node.first;
         int to = node.second;
 
-        if ((edge_num == parent_edge_num)||(to == parent_vertex))
+        if ((edge_num != parent_edge_num) && (to == parent_vertex)){
+            --bridges[parent_edge_num];
+            --bridges[edge_num];
+            continue;
+        }
+
+        if((edge_num == parent_edge_num) && (to ==parent_vertex))
             continue;
 
         if (colors[to]) {
             // back edge case
             up_arr[v] = min(in_times[to], up_arr[v]);
         } else {
-            dfs_visit(nodes, to, time, colors, bridges, in_times, up_arr, counter, edge_num, v);
+            dfs_visit(nodes, to, time, colors, bridges, in_times, up_arr, edge_num, v);
             up_arr[v] = min(up_arr[to], up_arr[v]);
 
             if (in_times[v] < up_arr[to]) {
-                bridges[edge_num] = true;
-                ++counter;
+                bridges[edge_num] +=1 ;
             }
         }
     }
 }
 
-int dfs(Graph &g, vector<bool> &bridges) {
+int dfs(Graph &g, vector<int> &bridges) {
 
     vector<bool> colors(g.V);
     vector<int> in_times(g.V);
     vector<int> up_arr(g.V);
-    int counter = 0;
     int time = 0;
 
     for (int i = 1; i < g.V; ++i) {
         if (!colors[i]) {
-            dfs_visit(g.nodes, i, time, colors, bridges, in_times, up_arr, counter);
+            dfs_visit(g.nodes, i, time, colors, bridges, in_times, up_arr);
         }
     }
+    int counter = 0;
+    for(int i: bridges)
+        if (i>0)
+            ++counter;
     return counter;
 }
 
@@ -84,12 +93,12 @@ int main() {
     Graph g(V, E);
     g.load_graph();
 
-    vector<bool> bridges(g.E + 1);
+    vector<int> bridges(g.E + 1);
     int count = dfs(g, bridges);
     if (count > 0) {
         cout << count << '\n';
-        for (int i = 1; i < g.E+1; ++i) {
-            if (bridges[i])
+        for (int i = 1; i < g.E + 1; ++i) {
+            if (bridges[i]>0)
                 cout << i << '\n';
         }
     } else
