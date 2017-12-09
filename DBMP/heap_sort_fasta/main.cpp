@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 /*
@@ -8,6 +9,11 @@
 
 
 using namespace std;
+
+const string INPUT_FILE = "/home/fogside/Projects/algorithms/DBMP/heap_sort_fasta/input_example.fasta";
+const string OUTPUT_FILE = "/home/fogside/Projects/algorithms/DBMP/heap_sort_fasta/sorted_output.fasta";
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void heapify(vector<char> &arr, long size, long parent_num) {
 
@@ -50,10 +56,38 @@ void heapSort(vector<char> &arr) {
 
 
 int main() {
-    vector<char> lol = {'a', 't', 'g', 'c', 'a', 'a', 'a', 'b', 'e', 'g', 'h'};
-    //TODO: прикрутить чтение и запись в fasta file;
-    heapSort(lol);
-    for (char i: lol)
-        cout << i << ' ';
+
+    ifstream input_file(INPUT_FILE);
+    ofstream output_file;
+    output_file.open(OUTPUT_FILE);
+
+    vector<char> string_vec;
+
+    string line;
+    string tmp_line;
+
+    if (input_file.is_open()) {
+        while (getline(input_file, line)) {
+            if ((line.front() == '>') && (!string_vec.empty())) {
+                heapSort(string_vec);
+                output_file << tmp_line << '\n';
+                output_file << string(string_vec.begin(), string_vec.end());
+                output_file << '\n';
+                string_vec.clear();
+                tmp_line = line;
+            }
+            if ((line.front() == '>') && (string_vec.empty())) {
+                tmp_line = line;
+
+            } else {
+                string_vec.resize(string_vec.size() + line.size());
+                for (long i = string_vec.size() - line.size(); i < string_vec.size(); ++i)
+                    string_vec[i] = line[i];
+            }
+
+        }
+    }
+    input_file.close();
+    output_file.close();
     return 0;
 }
