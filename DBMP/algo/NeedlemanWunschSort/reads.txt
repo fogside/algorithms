@@ -1,0 +1,6 @@
+>Rosalind_97
+ATATAGCG
+>Rosalind_98
+ATATAG
+>Rosalind_99
+ATATAGA
